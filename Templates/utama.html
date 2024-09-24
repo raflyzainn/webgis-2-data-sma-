@@ -3,9 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+    <title>EduMap Bandung</title>
+    <style>
+        body {
+            font-family: 'Josefin Sans', sans-serif;
+            background-color: #00186D;
+            
+        }
+
+        header { 
+            background-color: #ffff;
+            padding: 0;  
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;  
+            position: fixed; 
+            top: 0; 
+            left: 0;
+            right: 0;  
+            box-sizing: border-box; 
+            margin: 0; 
+            z-index: 1000; 
+        }
+
+        .link {
+            list-style: none;
+            display: flex;
+            gap: 80px;
+            margin: 0;
+            font-weight: bold;
+            font-size: 30px;
+        }
+
+        .link li {
+            display: inline;
+        }
+
+        .link a {
+            text-decoration: none; 
+            color: #004DD1; 
+        }
+
+        .logo {
+            width: 400px;
+        }
+
+        .card1 {
+            position: relative;
+            text-align: center;
+            margin-left: 0;
+            margin-right: 0;
+            margin-top: 100px; /* Push content down so it's not hidden under the header */
+        }
+
+        .bg1 {
+            left: 100%;
+            margin-left: 0;
+            margin-right: 0;
+            margin-top: 0px;
+            width: 100%;
+            filter: brightness(65%);
+            height: 500px;
+        }
+
+        .txtimg1 {
+            position: absolute;
+            top: 35%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ffff;
+            font-size: 45px;
+            font-weight: bolder ;
+        }
+
+        .txtimg2 {
+            position: absolute;
+            top: 65%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ffff;
+            font-size: 15px;
+        }
+
+        .card2 {
+            margin-top: 50px;
+            position: relative;
+            text-align: center;
+            margin-left: 0;
+            margin-right: 0;
+        }
+
+        .bg2 {
+            margin-top: 75px;
+            width: 85%;
+            position: relative; /* Make this position relative to position child elements */
+        }
+
+        .txtimg3 {
+            position: absolute;
+            top: 15%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 70px;
+            color: #ffff;
+        }
+
+        .pemetaan-sma {
+            position: relative; /* Parent element should be relative */
+            width: 15%;
+            margin: 0 auto; /* Center the container if needed */
+        }
+
+        .logo1 {
+            position: absolute; /* Absolute positioning */
+            top: 0; /* Adjust this value to move up or down */
+            left: 50%; /* Center horizontally */
+            transform: translate(-50%, 0); /* Center alignment */
+        }
+
+        .logo2 {
+            position: absolute; /* Absolute positioning */
+            top: 30%; /* Adjust this value to move up or down */
+            left: 50%; /* Center horizontally */
+            transform: translate(-50%, 0); /* Center alignment */
+        }
+
+        .garis1 {
+            margin-top: 100px;
+        }
+       
+    </style>
 </head>
 <body>
-    <h1>INI HALAMAN UTAMA</h1>
+    <header>
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Sample Image" class="logo">
+        
+        <ul class="link">
+            <li><a href="/">Beranda</a></li>
+            <li><a href="daftarsekolah">Data Sekolah</a></li>
+            <li><a href="webgis">WebGis</a></li>
+        </ul>
+    </header>
+
+    <div class="card1">
+        <img src="{{ url_for('static', filename='sma_sekolah.png') }}" alt="Background Card 1" class="bg1">
+        <h1 class="txtimg1">Temukan informasi penting terkait akreditasi SMA Negeri dan Swasta di EduMap Bandung!</h1>
+        <h3 class="txtimg2">Temukan data terkini tentang status akreditasi setiap sekolah, untuk memastikan <br> masa depan cerah bagi anak Bangsa dengan pilihan sekolah yang tepat!</h3>
+    </div>
+
+    <div class="card2">
+        <h1 class="txtimg3">LAYANAN</h1>
+        <img src="{{ url_for('static', filename='garis.png') }}" class="garis1">
+        <!-- <div class="pemetaan-sma">
+            <img src="{{ url_for('static', filename='lingkaran putih.png') }}" class="logo1">
+            <img src="{{ url_for('static', filename='sma.png') }}" class="logo2">
+        </div>      -->
+    </div>
+
+    <div class="card3">
+        
+    </div>
+
 </body>
 </html>
