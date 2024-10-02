@@ -11,6 +11,11 @@
         body {
             font-family: 'Josefin Sans', sans-serif;
             background-color: #00186D;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden; /* Prevents X-axis scrolling */
         }
 
         header {
@@ -25,6 +30,15 @@
             left: 0;
             right: 0;  
             box-sizing: border-box;  
+        }
+
+        main {
+            flex-grow: 1; /* This allows the footer to stay at the bottom when there's little content */
+            padding-top: 100px; /* Compensate for fixed header height */
+        }
+
+        .logo {
+            width: 400px;
         }
 
         .link {
@@ -45,10 +59,82 @@
             color: #004DD1; 
         }
 
-        .logo {
-            width: 400px;
+        .footer {
+            background-color: #43569C;
+            padding: 20px;
+            color: white;
+            font-family: 'Josefin Sans';
+            width: 100%; /* Ensure the footer takes the full width */
         }
-       
+
+        .footer-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            max-width: 100%; /* Ensures content doesn't exceed viewport width */
+        }
+
+        .footer-left {
+            width: 60%;
+            margin-bottom: 50px;
+        }
+
+        .footer-left h2 {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .footer-left .team {
+            display: flex;
+            justify-content: space-between;
+            gap: 40px; /* Adjust gap between left and right side */
+        }
+
+        .footer-left .left-side, .footer-left .right-side {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer-left .member {
+            margin-bottom: 30px; /* Adds space between members */
+        }
+
+        .footer-left .member h3 {
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .footer-left .member p {
+            font-size: 14px;
+            margin: 5px 0;
+        }
+
+        .footer-right {
+            width: 30%;
+            text-align: right;
+        }
+
+        .footer-right img {
+            margin-top: 80px;
+            margin-right: 250px;
+            width: 400px; 
+            margin-bottom: 10px;
+        }
+
+        .footer-right p {
+            text-align: left;
+            font-size: 18px;
+        }
+
+        .icon {
+            background: url('home-icon.png') no-repeat center center;
+            width: 24px;
+            height: 24px;
+            display: inline-block;
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
@@ -57,9 +143,59 @@
         
         <ul class="link">
             <li><a href="/">Beranda</a></li>
-            <li><a href="daftarsekolah">Daftar Sekolah</a></li>
+            <li><a href="daftarsekolah">Data Sekolah</a></li>
             <li><a href="webgis">WebGis</a></li>
         </ul>
     </header>
+
+    <main>
+        
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-left">
+                <h2><i class="icon"></i> Tentang Kami</h2>
+                <div class="team">
+                    <div class="left-side">
+                        <div class="member">
+                            <h3>Achmmad Rafly Khatami Zain</h3>
+                            <p>S1 Informatika</p>
+                            <p>raflyzainn1@gmail.com</p>
+                        </div>
+                        <div class="member">
+                            <h3>Munawir Rifa'i</h3>
+                            <p>S1 Teknik Telekomunikasi</p>
+                            <p>munawirr90@gmail.com</p>
+                        </div>
+                        <div class="member">
+                            <h3>Ni Made Sita Manika Putri</h3>
+                            <p>S1 Teknik Telekomunikasi</p>
+                            <p>sitamanikaputri@gmail.com</p>
+                        </div>
+                    </div>
+                    <div class="right-side">
+                        <div class="member">
+                            <h3>Bang Hakim</h3>
+                            <p>S1 Teknik Informatika</p>
+                        </div>
+                        <div class="member">
+                            <h3>Bang Abyan</h3>
+                            <p>S1 Teknik Informatika</p>
+                        </div>
+                        <div class="member">
+                            <h3>Bang Malvin</h3>
+                            <p>S1 Teknik Informatika</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-right">
+                <img src="{{ url_for('static', filename='mbc-logo.png') }}" alt="MBC Lab Logo" class="mbc-logo">
+                <p>MBC Laboratory</p>
+                <p>Telkom University</p>
+            </div>
+        </div>
+    </footer>    
 </body>
 </html>
