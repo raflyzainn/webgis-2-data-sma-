@@ -6,7 +6,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
-    <title>EduMap Bandung</title>
+    <title>Daftar Sekolah</title>
     <style>
         body {
             font-family: 'Josefin Sans', sans-serif;
@@ -30,22 +30,58 @@
             left: 0;
             right: 0;  
             box-sizing: border-box;  
+            height: 100px;
         }
 
         main {
-            flex-grow: 1; /* This allows the footer to stay at the bottom when there's little content */
-            padding-top: 100px; /* Compensate for fixed header height */
+            flex-grow: 1; 
+            padding-top: 100px; 
+            color: #fff; /* Added for contrast against background */
+        }
+
+        main h2 {
+            color: #ffff;
+            text-align: center;
+            margin-top: 20px; /* Adjusted margin for better spacing */
+            margin-bottom: 20px;
+            font-size: 40px; /* Slightly smaller font for h2 */
+        }
+
+        main table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        main th, main td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        main th {
+            background-color: #f2f2f2;
+            color: #000; /* Changed text color for header */
+        }
+
+        main img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 50px;
         }
 
         .logo {
-            width: 400px;
+            margin-left: 25px;
+            width: 425px;
         }
 
         .link {
+            margin-left: 40px; /* Sesuaikan margin kiri untuk mengurangi efek terlalu ke kanan */
             list-style: none;
             display: flex;
             gap: 80px;
-            margin: 0;
+            padding-right: 40px; /* Tambahkan padding kanan untuk memberikan jarak */
             font-weight: bold;
             font-size: 30px;
         }
@@ -59,19 +95,40 @@
             color: #004DD1; 
         }
 
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            margin: 0 5px;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            text-decoration: none;
+            color: #007BFF;
+        }
+
+        .pagination a.active {
+            background-color: #007BFF;
+            color: white;
+            border: 1px solid #007BFF;
+        }
+
         .footer {
             background-color: #43569C;
             padding: 20px;
             color: white;
             font-family: 'Josefin Sans';
-            width: 100%; /* Ensure the footer takes the full width */
+            width: 100%; 
         }
 
         .footer-container {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            max-width: 100%; /* Ensures content doesn't exceed viewport width */
+            max-width: 100%; 
         }
 
         .footer-left {
@@ -89,7 +146,7 @@
         .footer-left .team {
             display: flex;
             justify-content: space-between;
-            gap: 40px; /* Adjust gap between left and right side */
+            gap: 40px; 
         }
 
         .footer-left .left-side, .footer-left .right-side {
@@ -98,7 +155,7 @@
         }
 
         .footer-left .member {
-            margin-bottom: 30px; /* Adds space between members */
+            margin-bottom: 30px; 
         }
 
         .footer-left .member h3 {
@@ -145,11 +202,37 @@
             <li><a href="/">Beranda</a></li>
             <li><a href="daftarsekolah">Data Sekolah</a></li>
             <li><a href="webgis">WebGis</a></li>
+            <li><a href="">Tentang Kami</a></li>
         </ul>
     </header>
 
     <main>
+        <h2>DATA SEKOLAH</h2>
         
+        <table>
+            <thead>
+                <tr>
+                    <th>ID Sekolah</th>
+                    <th>Nama Sekolah</th>
+                    <th>Status</th>
+                    <th>Akreditasi</th>
+                    <th>Latitude</th>
+                    <th>Longitude</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for school in data %}
+                <tr>
+                    <td>{{ school['id_sekolah'] }}</td>
+                    <td>{{ school['sekolah'] }}</td>
+                    <td>{{ school['status'] }}</td>
+                    <td>{{ school['akreditasi'] }}</td>
+                    <td>{{ school['latitude'] }}</td>
+                    <td>{{ school['longitude'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </main>
 
     <footer class="footer">
@@ -177,15 +260,15 @@
                     <div class="right-side">
                         <div class="member">
                             <h3>Bang Hakim</h3>
-                            <p>S1 Teknik Informatika</p>
+                            <p>S1 Teknik Telekomunikasi</p>
                         </div>
                         <div class="member">
                             <h3>Bang Abyan</h3>
-                            <p>S1 Teknik Informatika</p>
+                            <p>S1 Teknik Telekomunikasi</p>
                         </div>
                         <div class="member">
                             <h3>Bang Malvin</h3>
-                            <p>S1 Teknik Informatika</p>
+                            <p>S1 Teknik Telekomunikasi</p>
                         </div>
                     </div>
                 </div>

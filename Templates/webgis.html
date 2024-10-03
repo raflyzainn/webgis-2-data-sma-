@@ -18,7 +18,7 @@
             overflow-x: hidden; /* Prevents X-axis scrolling */
         }
 
-        header {
+        header { 
             background-color: #ffff;
             padding: 0;  
             display: flex;
@@ -29,25 +29,30 @@
             top: 0; 
             left: 0;
             right: 0;  
-            box-sizing: border-box;  
-        }
-
-        main {
-            flex-grow: 1; /* This allows the footer to stay at the bottom when there's little content */
-            padding-top: 100px; /* Compensate for fixed header height */
-        }
-
-        .logo {
-            width: 400px;
+            box-sizing: border-box; 
+            margin: 0; 
+            z-index: 1000; 
+            height: 100px;
         }
 
         .link {
+            margin-left: 40px; 
             list-style: none;
             display: flex;
             gap: 80px;
-            margin: 0;
+            padding-right: 40px; 
             font-weight: bold;
             font-size: 30px;
+        }
+
+        main {
+            flex-grow: 1; 
+            padding-top: 100px; 
+        }
+
+        .logo {
+            margin-left: 25px;
+            width: 425px;
         }
 
         .link li {
@@ -64,14 +69,15 @@
             padding: 20px;
             color: white;
             font-family: 'Josefin Sans';
-            width: 100%; /* Ensure the footer takes the full width */
+            width: 100%; 
+            margin-top: 50px;
         }
 
         .footer-container {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            max-width: 100%; /* Ensures content doesn't exceed viewport width */
+            max-width: 100%; 
         }
 
         .footer-left {
@@ -135,6 +141,21 @@
             display: inline-block;
             margin-right: 10px;
         }
+
+        main h1 {
+            text-align: center;
+            color: #ffff;
+            font-size: 60px;
+            margin-top: 90px;
+            margin-bottom: 10px;
+        }
+
+        main img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 50px;
+        }
     </style>
 </head>
 <body>
@@ -145,12 +166,23 @@
             <li><a href="/">Beranda</a></li>
             <li><a href="daftarsekolah">Data Sekolah</a></li>
             <li><a href="webgis">WebGis</a></li>
+            <li><a href="">Tentang Kami</a></li>
         </ul>
     </header>
 
     <main>
-        
+        <h1>WEBGIS SMA BANDUNG</h1>
+        <img src="{{ url_for('static', filename='garis-webgis.png') }}" alt="Sample Image">
+
+        <iframe 
+            src="{{ url_for('static', filename='qgis2web_2024_10_02-19_46_39_975851/indexqgis.html') }}" 
+            frameborder="0" 
+            width="100%" 
+            height="800px"
+            margin-bottom="100px">
+        </iframe>
     </main>
+    
 
     <footer class="footer">
         <div class="footer-container">
@@ -177,15 +209,15 @@
                     <div class="right-side">
                         <div class="member">
                             <h3>Bang Hakim</h3>
-                            <p>S1 Teknik Informatika</p>
+                            <p>S1 Teknik Telekomunikasi</p>
                         </div>
                         <div class="member">
                             <h3>Bang Abyan</h3>
-                            <p>S1 Teknik Informatika</p>
+                            <p>S1 Teknik Telekomunikasi</p>
                         </div>
                         <div class="member">
                             <h3>Bang Malvin</h3>
-                            <p>S1 Teknik Informatika</p>
+                            <p>S1 Teknik Telekomunikasi</p>
                         </div>
                     </div>
                 </div>

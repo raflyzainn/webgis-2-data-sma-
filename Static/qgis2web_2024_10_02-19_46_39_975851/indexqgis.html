@@ -1,0 +1,3231 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/L.Control.Layers.Tree.css">
+        <link rel="stylesheet" href="css/qgis2web.css">
+        <link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/L.Control.Layers.Tree.min.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="data/buffer_SMA_1.js"></script>
+        <script src="data/data_SMA_gabungan_2.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+
+            if (e.target.feature.geometry.type === 'LineString' || e.target.feature.geometry.type === 'MultiLineString') {
+              highlightLayer.setStyle({
+                color: '#ffff00',
+              });
+            } else {
+              highlightLayer.setStyle({
+                fillColor: '#ffff00',
+                fillOpacity: 1
+              });
+            }
+        }
+        var map = L.map('map', {
+            zoomControl:false, maxZoom:28, minZoom:1
+        }).fitBounds([[-7.178169153932356,107.3101684017956],[-6.838653200501264,107.81160209399047]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        // remove popup's row if "visible-with-data"
+        function removeEmptyRowsFromPopupContent(content, feature) {
+         var tempDiv = document.createElement('div');
+         tempDiv.innerHTML = content;
+         var rows = tempDiv.querySelectorAll('tr');
+         for (var i = 0; i < rows.length; i++) {
+             var td = rows[i].querySelector('td.visible-with-data');
+             var key = td ? td.id : '';
+             if (td && td.classList.contains('visible-with-data') && feature.properties[key] == null) {
+                 rows[i].parentNode.removeChild(rows[i]);
+             }
+         }
+         return tempDiv.innerHTML;
+        }
+        // add class to format popup if it contains media
+		function addClassToPopupIfMedia(content, popup) {
+			var tempDiv = document.createElement('div');
+			tempDiv.innerHTML = content;
+			if (tempDiv.querySelector('td img')) {
+				popup._contentNode.classList.add('media');
+					// Delay to force the redraw
+					setTimeout(function() {
+						popup.update();
+					}, 10);
+			} else {
+				popup._contentNode.classList.remove('media');
+			}
+		}
+        var zoomControl = L.control.zoom({
+            position: 'topleft'
+        }).addTo(map);
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0].innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0].className += ' fas fa-ruler';
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        map.createPane('pane_GoogleSatellite_0');
+        map.getPane('pane_GoogleSatellite_0').style.zIndex = 400;
+        var layer_GoogleSatellite_0 = L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+            pane: 'pane_GoogleSatellite_0',
+            opacity: 1.0,
+            attribution: '',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 19
+        });
+        layer_GoogleSatellite_0;
+        map.addLayer(layer_GoogleSatellite_0);
+        function pop_buffer_SMA_1(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (var i in e.target._eventParents) {
+                        if (typeof e.target._eventParents[i].resetStyle === 'function') {
+                            e.target._eventParents[i].resetStyle(e.target);
+                        }
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['No'] !== null ? autolinker.link(feature.properties['No'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Sekolah'] !== null ? autolinker.link(feature.properties['Sekolah'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['status'] !== null ? autolinker.link(feature.properties['status'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Akreditasi'] !== null ? autolinker.link(feature.properties['Akreditasi'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['lattitude'] !== null ? autolinker.link(feature.properties['lattitude'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>longitude</strong><br />' + (feature.properties['longitude'] !== null ? autolinker.link(feature.properties['longitude'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['foto'] !== null ? autolinker.link(feature.properties['foto'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_buffer_SMA_1_0(feature) {
+            switch(String(feature.properties['Sekolah'])) {
+                case 'SMA AL AMANAH CIWIDEY':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(48,18,59,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA AL MASUDIYAH MARGAASIH':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(51,25,76,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA AL-FALAH BANJARAN':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(54,32,93,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA AL-HIDAYAH CIPARAY':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(56,39,109,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA AL-HUDA ARJASARI':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(58,46,124,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA AL-QONAAH BALEENDAH':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(61,52,138,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA AMS PAMEUNGPEUK':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(63,59,151,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA ANGKASA MARGAHAYU':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(64,65,164,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA ASH-SHOPA MAJALAYA':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(66,72,176,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA ASSALAM DAYEUHKOLOT':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(67,78,187,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA ASY-SYUJA\'IYYAH CIWIDEY':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(68,85,197,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA AULIA MAJALAYA':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(69,92,206,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA BAKTI NUSANTARA':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(70,98,215,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA BANJAR ASRI CIMAUNG':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(70,104,223,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA BHAKTI MULYA BANJARAN':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(71,110,230,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA BHAKTI PUTRA':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(71,116,236,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA BINA BANGSA SCHOOL':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(71,122,241,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA BINA MUDA CICALENGKA':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(70,128,246,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA BINA NEGARA 1 BALEENDAH':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(70,134,250,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA BPPI BALEENDAH':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(69,139,253,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA BUPPI MAJALAYA':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(67,145,254,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA CENDIKIA INFORMATIKA':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(65,151,255,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA DARMAYANTI CIMAUNG':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(61,157,254,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA DARUL HIKMAH BOJONGSOANG':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(58,163,252,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA HANDAYANI 2 BANJARAN':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(54,169,249,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA HANDAYANI I ARJASARI':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(50,174,246,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA ISLAH BAKTI ASIH':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(46,180,242,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA ISLAM AL-MUKLIS':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(41,186,237,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA IT DANUL FALAH':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(37,192,231,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA IT DIPATIUKUR':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(34,197,226,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA K 3 BINA BAKTI':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(31,202,220,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA KARANG ARUM CILENGKRANG':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(27,207,214,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA KARYA BUDI CILEUNYI':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(26,212,208,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA KP 1 CIPARAY':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(24,216,201,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA KP 1 PASEH':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(24,221,194,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA KP 2 CIPARAY':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(24,224,189,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA KP 2 PASEH':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(26,228,183,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA KP 3 PASEH':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(29,231,178,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA KP BALEENDAH':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(32,234,172,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA KP BAROS ARJASARI':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(38,237,165,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA KP CICALENGKA':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(44,240,158,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA KP CIWIDEY PASIRJAMBU':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(51,242,151,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA KP MARGAHAYU':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(59,245,143,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA MAHAWARMAN':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(67,247,135,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA MAJALAYA PUTRA':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(75,248,127,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA MANGGALA':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(84,250,119,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA MARDIKA PASEH':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(93,252,111,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA MATHLAUL ANWAR MARGAHAYU':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(103,253,104,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA MEKAR ARUM CILEUNYI':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(112,254,96,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA MUHAMMADIYAH 2 MAJALAYA':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(121,254,89,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA MUHAMMADIYAH 3 CIPARAY':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(130,255,82,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA MUHAMMADIYAH 4 MARGAHAYU':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(138,255,76,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA MUHAMMADIYAH 5 RANCAEKEK':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(147,255,71,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA MUHAMMADIYAH 6 KERTASARI':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(154,254,65,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA MUTIARA SANDI':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(161,253,61,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA NURUZAMAN CILENGKRANG':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(167,252,58,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA PASUNDAN BANJARAN':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(174,250,55,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA PASUNDAN MAJALAYA':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(180,248,54,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA PASUNDAN RANCAEKEK':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(186,246,53,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA PELITA BUNGA BANGSA':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(192,243,52,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA PEMUDA BANJARAN':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(198,240,52,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA PERKAPPEN SINUMBRA':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(204,237,52,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA PGRI 31 PANGALENGAN':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(209,233,53,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA PGRI CICALENGKA':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(215,229,53,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA PGRI RANCAEKEK':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(220,225,54,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA PLUS BABUSSALAM CIMENYAN':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(224,222,55,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA PLUS ISLAM PACET':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(229,217,56,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA PLUS MERDEKA SOREANG':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(234,212,57,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA PLUS TEBAR ILMU CIPARAY':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(237,208,58,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA PUQ PAMEUNGPEUK':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(241,203,58,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA PUTRA INDONESIA PASEH':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(244,198,58,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA SAPTA DHARMA':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(247,193,58,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA SOREANG PUTRA':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(249,188,57,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA SWADAYA KARYA CIWIDEY':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(251,183,56,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA TALENTA':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(252,177,54,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA TAMAN SISWA RANCAEKEK':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(253,172,52,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA TELKOM BANDUNG':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(254,166,50,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA TERPADU AL-MUMIN':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(254,158,47,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA TERPADU BAITURRAHMAN':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(254,152,44,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA TERPADU BANDUNG IBUN':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(254,145,41,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA TUNAS BARU CIPARAY':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(253,138,38,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA YADIKA CICALENGKA':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(252,131,35,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA YADIKA SOREANG':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(250,124,32,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA YAPI AL-HUSAENI':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(249,117,29,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA YP BINA BANGSA':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(247,110,26,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA YPPI BALEENDAH':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(244,103,23,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMA YUMIK BANJARAN':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(242,96,20,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMAAS AL FIIL':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(240,90,18,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 BALEENDAH':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(236,84,15,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 BANJARAN':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(234,78,13,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 BOJONGSOANG':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(230,72,12,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 CICALENGKA':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(227,68,10,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 CIKANCUNG':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(223,63,8,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 CILEUNYI':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(219,58,7,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 CIPARAY':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(214,53,6,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 CIWIDEY':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(210,49,5,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 DAYEUHKOLOT':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(205,44,4,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 KATAPANG':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(200,40,3,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 KERTASARI':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(195,37,3,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 MAJALAYA':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(189,32,2,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 MARGAASIH':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(183,29,2,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 MARGAHAYU':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(177,26,1,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 NAGREG':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(170,22,1,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 PANGALENGAN':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(164,19,1,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 RANCAEKEK':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(157,16,1,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 SOREANG':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(150,13,1,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMAS AL MADINA':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(142,10,1,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMAS HARAPAN BANGSA BALEENDAH':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(135,8,2,0.2)',
+                interactive: true,
+            }
+                    break;
+                case 'SMAS ISLAM TERPADU SASAMA':
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(127,6,2,0.2)',
+                interactive: true,
+            }
+                    break;
+                default:
+                    return {
+                pane: 'pane_buffer_SMA_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,0.2)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(122,4,3,0.2)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_buffer_SMA_1');
+        map.getPane('pane_buffer_SMA_1').style.zIndex = 401;
+        map.getPane('pane_buffer_SMA_1').style['mix-blend-mode'] = 'normal';
+        var layer_buffer_SMA_1 = new L.geoJson(json_buffer_SMA_1, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_buffer_SMA_1',
+            layerName: 'layer_buffer_SMA_1',
+            pane: 'pane_buffer_SMA_1',
+            onEachFeature: pop_buffer_SMA_1,
+            style: style_buffer_SMA_1_0,
+        });
+        bounds_group.addLayer(layer_buffer_SMA_1);
+        map.addLayer(layer_buffer_SMA_1);
+        function pop_data_SMA_gabungan_2(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (var i in e.target._eventParents) {
+                        if (typeof e.target._eventParents[i].resetStyle === 'function') {
+                            e.target._eventParents[i].resetStyle(e.target);
+                        }
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['No'] !== null ? autolinker.link(feature.properties['No'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Sekolah'] !== null ? autolinker.link(feature.properties['Sekolah'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['status'] !== null ? autolinker.link(feature.properties['status'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Akreditasi'] !== null ? autolinker.link(feature.properties['Akreditasi'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['lattitude'] !== null ? autolinker.link(feature.properties['lattitude'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['longitude'] !== null ? autolinker.link(feature.properties['longitude'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['foto'] !== null ? '<img src="images/' + String(feature.properties['foto']).replace(/[\\\/:]/g, '_').trim() + '">' : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_data_SMA_gabungan_2_0(feature) {
+            switch(String(feature.properties['Sekolah'])) {
+                case 'SMA AL AMANAH CIWIDEY':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA AL MASUDIYAH MARGAASIH':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA AL-FALAH BANJARAN':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA AL-HIDAYAH CIPARAY':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA AL-HUDA ARJASARI':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA AL-QONAAH BALEENDAH':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA AMS PAMEUNGPEUK':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA ANGKASA MARGAHAYU':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA ASH-SHOPA MAJALAYA':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA ASSALAM DAYEUHKOLOT':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA ASY-SYUJA\'IYYAH CIWIDEY':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA AULIA MAJALAYA':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA BAKTI NUSANTARA':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA BANJAR ASRI CIMAUNG':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA BHAKTI MULYA BANJARAN':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA BHAKTI PUTRA':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA BINA BANGSA SCHOOL':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA BINA MUDA CICALENGKA':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA BINA NEGARA 1 BALEENDAH':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA BPPI BALEENDAH':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA BUPPI MAJALAYA':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA CENDIKIA INFORMATIKA':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA DARMAYANTI CIMAUNG':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA DARUL HIKMAH BOJONGSOANG':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA HANDAYANI 2 BANJARAN':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA HANDAYANI I ARJASARI':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA ISLAH BAKTI ASIH':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA ISLAM AL-MUKLIS':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA IT DANUL FALAH':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA IT DIPATIUKUR':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA K 3 BINA BAKTI':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA KARANG ARUM CILENGKRANG':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA KARYA BUDI CILEUNYI':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA KP 1 CIPARAY':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA KP 1 PASEH':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA KP 2 CIPARAY':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA KP 2 PASEH':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA KP 3 PASEH':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA KP BALEENDAH':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA KP BAROS ARJASARI':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA KP CICALENGKA':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA KP CIWIDEY PASIRJAMBU':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA KP MARGAHAYU':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA MAHAWARMAN':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA MAJALAYA PUTRA':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA MANGGALA':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA MARDIKA PASEH':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA MATHLAUL ANWAR MARGAHAYU':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA MEKAR ARUM CILEUNYI':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA MUHAMMADIYAH 2 MAJALAYA':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA MUHAMMADIYAH 3 CIPARAY':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA MUHAMMADIYAH 4 MARGAHAYU':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA MUHAMMADIYAH 5 RANCAEKEK':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA MUHAMMADIYAH 6 KERTASARI':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA MUTIARA SANDI':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA NURUZAMAN CILENGKRANG':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA PASUNDAN BANJARAN':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA PASUNDAN MAJALAYA':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA PASUNDAN RANCAEKEK':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA PELITA BUNGA BANGSA':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA PEMUDA BANJARAN':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA PERKAPPEN SINUMBRA':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA PGRI 31 PANGALENGAN':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA PGRI CICALENGKA':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA PGRI RANCAEKEK':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA PLUS BABUSSALAM CIMENYAN':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA PLUS ISLAM PACET':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA PLUS MERDEKA SOREANG':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA PLUS TEBAR ILMU CIPARAY':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA PUQ PAMEUNGPEUK':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA PUTRA INDONESIA PASEH':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA SAPTA DHARMA':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA SOREANG PUTRA':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA SWADAYA KARYA CIWIDEY':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA TALENTA':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA TAMAN SISWA RANCAEKEK':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA TELKOM BANDUNG':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA TERPADU AL-MUMIN':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA TERPADU BAITURRAHMAN':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA TERPADU BANDUNG IBUN':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA TUNAS BARU CIPARAY':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA YADIKA CICALENGKA':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA YADIKA SOREANG':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA YAPI AL-HUSAENI':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA YP BINA BANGSA':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA YPPI BALEENDAH':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMA YUMIK BANJARAN':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMAAS AL FIIL':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 BALEENDAH':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 BANJARAN':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 BOJONGSOANG':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 CICALENGKA':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 CIKANCUNG':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 CILEUNYI':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 CIPARAY':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 CIWIDEY':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 DAYEUHKOLOT':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 KATAPANG':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 KERTASARI':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 MAJALAYA':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 MARGAASIH':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 MARGAHAYU':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 NAGREG':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 PANGALENGAN':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 RANCAEKEK':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMAN 1 SOREANG':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMAS AL MADINA':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMAS HARAPAN BANGSA BALEENDAH':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'SMAS ISLAM TERPADU SASAMA':
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                default:
+                    return {
+                pane: 'pane_data_SMA_gabungan_2',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/data_SMA_gabungan_2.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_data_SMA_gabungan_2');
+        map.getPane('pane_data_SMA_gabungan_2').style.zIndex = 402;
+        map.getPane('pane_data_SMA_gabungan_2').style['mix-blend-mode'] = 'normal';
+        var layer_data_SMA_gabungan_2 = new L.geoJson(json_data_SMA_gabungan_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_data_SMA_gabungan_2',
+            layerName: 'layer_data_SMA_gabungan_2',
+            pane: 'pane_data_SMA_gabungan_2',
+            onEachFeature: pop_data_SMA_gabungan_2,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.marker(latlng, style_data_SMA_gabungan_2_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_data_SMA_gabungan_2);
+        map.addLayer(layer_data_SMA_gabungan_2);
+        var baseMaps = {};
+        var overlaysTree = [
+            {label: 'data_SMA_gabungan<br /><table><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAALAMANAHCIWIDEY0.png" /></td><td>SMA AL AMANAH CIWIDEY</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAALMASUDIYAHMARGAASIH1.png" /></td><td>SMA AL MASUDIYAH MARGAASIH</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAALFALAHBANJARAN2.png" /></td><td>SMA AL-FALAH BANJARAN</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAALHIDAYAHCIPARAY3.png" /></td><td>SMA AL-HIDAYAH CIPARAY</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAALHUDAARJASARI4.png" /></td><td>SMA AL-HUDA ARJASARI</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAALQONAAHBALEENDAH5.png" /></td><td>SMA AL-QONAAH BALEENDAH</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAAMSPAMEUNGPEUK6.png" /></td><td>SMA AMS PAMEUNGPEUK</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAANGKASAMARGAHAYU7.png" /></td><td>SMA ANGKASA MARGAHAYU</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAASHSHOPAMAJALAYA8.png" /></td><td>SMA ASH-SHOPA MAJALAYA</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAASSALAMDAYEUHKOLOT9.png" /></td><td>SMA ASSALAM DAYEUHKOLOT</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAASYSYUJAIYYAHCIWIDEY10.png" /></td><td>SMA ASY-SYUJA\'IYYAH CIWIDEY</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAAULIAMAJALAYA11.png" /></td><td>SMA AULIA MAJALAYA</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMABAKTINUSANTARA12.png" /></td><td>SMA BAKTI NUSANTARA</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMABANJARASRICIMAUNG13.png" /></td><td>SMA BANJAR ASRI CIMAUNG</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMABHAKTIMULYABANJARAN14.png" /></td><td>SMA BHAKTI MULYA BANJARAN</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMABHAKTIPUTRA15.png" /></td><td>SMA BHAKTI PUTRA</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMABINABANGSASCHOOL16.png" /></td><td>SMA BINA BANGSA SCHOOL</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMABINAMUDACICALENGKA17.png" /></td><td>SMA BINA MUDA CICALENGKA</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMABINANEGARA1BALEENDAH18.png" /></td><td>SMA BINA NEGARA 1 BALEENDAH</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMABPPIBALEENDAH19.png" /></td><td>SMA BPPI BALEENDAH</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMABUPPIMAJALAYA20.png" /></td><td>SMA BUPPI MAJALAYA</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMACENDIKIAINFORMATIKA21.png" /></td><td>SMA CENDIKIA INFORMATIKA</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMADARMAYANTICIMAUNG22.png" /></td><td>SMA DARMAYANTI CIMAUNG</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMADARULHIKMAHBOJONGSOANG23.png" /></td><td>SMA DARUL HIKMAH BOJONGSOANG</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAHANDAYANI2BANJARAN24.png" /></td><td>SMA HANDAYANI 2 BANJARAN</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAHANDAYANIIARJASARI25.png" /></td><td>SMA HANDAYANI I ARJASARI</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAISLAHBAKTIASIH26.png" /></td><td>SMA ISLAH BAKTI ASIH</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAISLAMALMUKLIS27.png" /></td><td>SMA ISLAM AL-MUKLIS</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAITDANULFALAH28.png" /></td><td>SMA IT DANUL FALAH</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAITDIPATIUKUR29.png" /></td><td>SMA IT DIPATIUKUR</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAK3BINABAKTI30.png" /></td><td>SMA K 3 BINA BAKTI</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAKARANGARUMCILENGKRANG31.png" /></td><td>SMA KARANG ARUM CILENGKRANG</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAKARYABUDICILEUNYI32.png" /></td><td>SMA KARYA BUDI CILEUNYI</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAKP1CIPARAY33.png" /></td><td>SMA KP 1 CIPARAY</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAKP1PASEH34.png" /></td><td>SMA KP 1 PASEH</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAKP2CIPARAY35.png" /></td><td>SMA KP 2 CIPARAY</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAKP2PASEH36.png" /></td><td>SMA KP 2 PASEH</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAKP3PASEH37.png" /></td><td>SMA KP 3 PASEH</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAKPBALEENDAH38.png" /></td><td>SMA KP BALEENDAH</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAKPBAROSARJASARI39.png" /></td><td>SMA KP BAROS ARJASARI</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAKPCICALENGKA40.png" /></td><td>SMA KP CICALENGKA</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAKPCIWIDEYPASIRJAMBU41.png" /></td><td>SMA KP CIWIDEY PASIRJAMBU</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAKPMARGAHAYU42.png" /></td><td>SMA KP MARGAHAYU</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAMAHAWARMAN43.png" /></td><td>SMA MAHAWARMAN</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAMAJALAYAPUTRA44.png" /></td><td>SMA MAJALAYA PUTRA</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAMANGGALA45.png" /></td><td>SMA MANGGALA</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAMARDIKAPASEH46.png" /></td><td>SMA MARDIKA PASEH</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAMATHLAULANWARMARGAHAYU47.png" /></td><td>SMA MATHLAUL ANWAR MARGAHAYU</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAMEKARARUMCILEUNYI48.png" /></td><td>SMA MEKAR ARUM CILEUNYI</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAMUHAMMADIYAH2MAJALAYA49.png" /></td><td>SMA MUHAMMADIYAH 2 MAJALAYA</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAMUHAMMADIYAH3CIPARAY50.png" /></td><td>SMA MUHAMMADIYAH 3 CIPARAY</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAMUHAMMADIYAH4MARGAHAYU51.png" /></td><td>SMA MUHAMMADIYAH 4 MARGAHAYU</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAMUHAMMADIYAH5RANCAEKEK52.png" /></td><td>SMA MUHAMMADIYAH 5 RANCAEKEK</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAMUHAMMADIYAH6KERTASARI53.png" /></td><td>SMA MUHAMMADIYAH 6 KERTASARI</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAMUTIARASANDI54.png" /></td><td>SMA MUTIARA SANDI</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMANURUZAMANCILENGKRANG55.png" /></td><td>SMA NURUZAMAN CILENGKRANG</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAPASUNDANBANJARAN56.png" /></td><td>SMA PASUNDAN BANJARAN</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAPASUNDANMAJALAYA57.png" /></td><td>SMA PASUNDAN MAJALAYA</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAPASUNDANRANCAEKEK58.png" /></td><td>SMA PASUNDAN RANCAEKEK</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAPELITABUNGABANGSA59.png" /></td><td>SMA PELITA BUNGA BANGSA</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAPEMUDABANJARAN60.png" /></td><td>SMA PEMUDA BANJARAN</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAPERKAPPENSINUMBRA61.png" /></td><td>SMA PERKAPPEN SINUMBRA</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAPGRI31PANGALENGAN62.png" /></td><td>SMA PGRI 31 PANGALENGAN</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAPGRICICALENGKA63.png" /></td><td>SMA PGRI CICALENGKA</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAPGRIRANCAEKEK64.png" /></td><td>SMA PGRI RANCAEKEK</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAPLUSBABUSSALAMCIMENYAN65.png" /></td><td>SMA PLUS BABUSSALAM CIMENYAN</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAPLUSISLAMPACET66.png" /></td><td>SMA PLUS ISLAM PACET</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAPLUSMERDEKASOREANG67.png" /></td><td>SMA PLUS MERDEKA SOREANG</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAPLUSTEBARILMUCIPARAY68.png" /></td><td>SMA PLUS TEBAR ILMU CIPARAY</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAPUQPAMEUNGPEUK69.png" /></td><td>SMA PUQ PAMEUNGPEUK</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAPUTRAINDONESIAPASEH70.png" /></td><td>SMA PUTRA INDONESIA PASEH</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMASAPTADHARMA71.png" /></td><td>SMA SAPTA DHARMA</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMASOREANGPUTRA72.png" /></td><td>SMA SOREANG PUTRA</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMASWADAYAKARYACIWIDEY73.png" /></td><td>SMA SWADAYA KARYA CIWIDEY</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMATALENTA74.png" /></td><td>SMA TALENTA</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMATAMANSISWARANCAEKEK75.png" /></td><td>SMA TAMAN SISWA RANCAEKEK</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMATELKOMBANDUNG76.png" /></td><td>SMA TELKOM BANDUNG</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMATERPADUALMUMIN77.png" /></td><td>SMA TERPADU AL-MUMIN</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMATERPADUBAITURRAHMAN78.png" /></td><td>SMA TERPADU BAITURRAHMAN</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMATERPADUBANDUNGIBUN79.png" /></td><td>SMA TERPADU BANDUNG IBUN</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMATUNASBARUCIPARAY80.png" /></td><td>SMA TUNAS BARU CIPARAY</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAYADIKACICALENGKA81.png" /></td><td>SMA YADIKA CICALENGKA</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAYADIKASOREANG82.png" /></td><td>SMA YADIKA SOREANG</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAYAPIALHUSAENI83.png" /></td><td>SMA YAPI AL-HUSAENI</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAYPBINABANGSA84.png" /></td><td>SMA YP BINA BANGSA</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAYPPIBALEENDAH85.png" /></td><td>SMA YPPI BALEENDAH</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAYUMIKBANJARAN86.png" /></td><td>SMA YUMIK BANJARAN</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAASALFIIL87.png" /></td><td>SMAAS AL FIIL</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAN1BALEENDAH88.png" /></td><td>SMAN 1 BALEENDAH</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAN1BANJARAN89.png" /></td><td>SMAN 1 BANJARAN</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAN1BOJONGSOANG90.png" /></td><td>SMAN 1 BOJONGSOANG</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAN1CICALENGKA91.png" /></td><td>SMAN 1 CICALENGKA</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAN1CIKANCUNG92.png" /></td><td>SMAN 1 CIKANCUNG</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAN1CILEUNYI93.png" /></td><td>SMAN 1 CILEUNYI</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAN1CIPARAY94.png" /></td><td>SMAN 1 CIPARAY</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAN1CIWIDEY95.png" /></td><td>SMAN 1 CIWIDEY</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAN1DAYEUHKOLOT96.png" /></td><td>SMAN 1 DAYEUHKOLOT</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAN1KATAPANG97.png" /></td><td>SMAN 1 KATAPANG</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAN1KERTASARI98.png" /></td><td>SMAN 1 KERTASARI</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAN1MAJALAYA99.png" /></td><td>SMAN 1 MAJALAYA</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAN1MARGAASIH100.png" /></td><td>SMAN 1 MARGAASIH</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAN1MARGAHAYU101.png" /></td><td>SMAN 1 MARGAHAYU</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAN1NAGREG102.png" /></td><td>SMAN 1 NAGREG</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAN1PANGALENGAN103.png" /></td><td>SMAN 1 PANGALENGAN</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAN1RANCAEKEK104.png" /></td><td>SMAN 1 RANCAEKEK</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMAN1SOREANG105.png" /></td><td>SMAN 1 SOREANG</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMASALMADINA106.png" /></td><td>SMAS AL MADINA</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMASHARAPANBANGSABALEENDAH107.png" /></td><td>SMAS HARAPAN BANGSA BALEENDAH</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_SMASISLAMTERPADUSASAMA108.png" /></td><td>SMAS ISLAM TERPADU SASAMA</td></tr><tr><td style="text-align: center;"><img src="legend/data_SMA_gabungan_2_109.png" /></td><td></td></tr></table>', layer: layer_data_SMA_gabungan_2},
+            {label: 'buffer_SMA<br /><table><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAALAMANAHCIWIDEY0.png" /></td><td>SMA AL AMANAH CIWIDEY</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAALMASUDIYAHMARGAASIH1.png" /></td><td>SMA AL MASUDIYAH MARGAASIH</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAALFALAHBANJARAN2.png" /></td><td>SMA AL-FALAH BANJARAN</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAALHIDAYAHCIPARAY3.png" /></td><td>SMA AL-HIDAYAH CIPARAY</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAALHUDAARJASARI4.png" /></td><td>SMA AL-HUDA ARJASARI</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAALQONAAHBALEENDAH5.png" /></td><td>SMA AL-QONAAH BALEENDAH</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAAMSPAMEUNGPEUK6.png" /></td><td>SMA AMS PAMEUNGPEUK</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAANGKASAMARGAHAYU7.png" /></td><td>SMA ANGKASA MARGAHAYU</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAASHSHOPAMAJALAYA8.png" /></td><td>SMA ASH-SHOPA MAJALAYA</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAASSALAMDAYEUHKOLOT9.png" /></td><td>SMA ASSALAM DAYEUHKOLOT</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAASYSYUJAIYYAHCIWIDEY10.png" /></td><td>SMA ASY-SYUJA\'IYYAH CIWIDEY</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAAULIAMAJALAYA11.png" /></td><td>SMA AULIA MAJALAYA</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMABAKTINUSANTARA12.png" /></td><td>SMA BAKTI NUSANTARA</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMABANJARASRICIMAUNG13.png" /></td><td>SMA BANJAR ASRI CIMAUNG</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMABHAKTIMULYABANJARAN14.png" /></td><td>SMA BHAKTI MULYA BANJARAN</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMABHAKTIPUTRA15.png" /></td><td>SMA BHAKTI PUTRA</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMABINABANGSASCHOOL16.png" /></td><td>SMA BINA BANGSA SCHOOL</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMABINAMUDACICALENGKA17.png" /></td><td>SMA BINA MUDA CICALENGKA</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMABINANEGARA1BALEENDAH18.png" /></td><td>SMA BINA NEGARA 1 BALEENDAH</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMABPPIBALEENDAH19.png" /></td><td>SMA BPPI BALEENDAH</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMABUPPIMAJALAYA20.png" /></td><td>SMA BUPPI MAJALAYA</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMACENDIKIAINFORMATIKA21.png" /></td><td>SMA CENDIKIA INFORMATIKA</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMADARMAYANTICIMAUNG22.png" /></td><td>SMA DARMAYANTI CIMAUNG</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMADARULHIKMAHBOJONGSOANG23.png" /></td><td>SMA DARUL HIKMAH BOJONGSOANG</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAHANDAYANI2BANJARAN24.png" /></td><td>SMA HANDAYANI 2 BANJARAN</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAHANDAYANIIARJASARI25.png" /></td><td>SMA HANDAYANI I ARJASARI</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAISLAHBAKTIASIH26.png" /></td><td>SMA ISLAH BAKTI ASIH</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAISLAMALMUKLIS27.png" /></td><td>SMA ISLAM AL-MUKLIS</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAITDANULFALAH28.png" /></td><td>SMA IT DANUL FALAH</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAITDIPATIUKUR29.png" /></td><td>SMA IT DIPATIUKUR</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAK3BINABAKTI30.png" /></td><td>SMA K 3 BINA BAKTI</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAKARANGARUMCILENGKRANG31.png" /></td><td>SMA KARANG ARUM CILENGKRANG</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAKARYABUDICILEUNYI32.png" /></td><td>SMA KARYA BUDI CILEUNYI</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAKP1CIPARAY33.png" /></td><td>SMA KP 1 CIPARAY</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAKP1PASEH34.png" /></td><td>SMA KP 1 PASEH</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAKP2CIPARAY35.png" /></td><td>SMA KP 2 CIPARAY</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAKP2PASEH36.png" /></td><td>SMA KP 2 PASEH</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAKP3PASEH37.png" /></td><td>SMA KP 3 PASEH</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAKPBALEENDAH38.png" /></td><td>SMA KP BALEENDAH</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAKPBAROSARJASARI39.png" /></td><td>SMA KP BAROS ARJASARI</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAKPCICALENGKA40.png" /></td><td>SMA KP CICALENGKA</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAKPCIWIDEYPASIRJAMBU41.png" /></td><td>SMA KP CIWIDEY PASIRJAMBU</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAKPMARGAHAYU42.png" /></td><td>SMA KP MARGAHAYU</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAMAHAWARMAN43.png" /></td><td>SMA MAHAWARMAN</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAMAJALAYAPUTRA44.png" /></td><td>SMA MAJALAYA PUTRA</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAMANGGALA45.png" /></td><td>SMA MANGGALA</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAMARDIKAPASEH46.png" /></td><td>SMA MARDIKA PASEH</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAMATHLAULANWARMARGAHAYU47.png" /></td><td>SMA MATHLAUL ANWAR MARGAHAYU</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAMEKARARUMCILEUNYI48.png" /></td><td>SMA MEKAR ARUM CILEUNYI</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAMUHAMMADIYAH2MAJALAYA49.png" /></td><td>SMA MUHAMMADIYAH 2 MAJALAYA</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAMUHAMMADIYAH3CIPARAY50.png" /></td><td>SMA MUHAMMADIYAH 3 CIPARAY</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAMUHAMMADIYAH4MARGAHAYU51.png" /></td><td>SMA MUHAMMADIYAH 4 MARGAHAYU</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAMUHAMMADIYAH5RANCAEKEK52.png" /></td><td>SMA MUHAMMADIYAH 5 RANCAEKEK</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAMUHAMMADIYAH6KERTASARI53.png" /></td><td>SMA MUHAMMADIYAH 6 KERTASARI</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAMUTIARASANDI54.png" /></td><td>SMA MUTIARA SANDI</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMANURUZAMANCILENGKRANG55.png" /></td><td>SMA NURUZAMAN CILENGKRANG</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAPASUNDANBANJARAN56.png" /></td><td>SMA PASUNDAN BANJARAN</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAPASUNDANMAJALAYA57.png" /></td><td>SMA PASUNDAN MAJALAYA</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAPASUNDANRANCAEKEK58.png" /></td><td>SMA PASUNDAN RANCAEKEK</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAPELITABUNGABANGSA59.png" /></td><td>SMA PELITA BUNGA BANGSA</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAPEMUDABANJARAN60.png" /></td><td>SMA PEMUDA BANJARAN</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAPERKAPPENSINUMBRA61.png" /></td><td>SMA PERKAPPEN SINUMBRA</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAPGRI31PANGALENGAN62.png" /></td><td>SMA PGRI 31 PANGALENGAN</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAPGRICICALENGKA63.png" /></td><td>SMA PGRI CICALENGKA</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAPGRIRANCAEKEK64.png" /></td><td>SMA PGRI RANCAEKEK</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAPLUSBABUSSALAMCIMENYAN65.png" /></td><td>SMA PLUS BABUSSALAM CIMENYAN</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAPLUSISLAMPACET66.png" /></td><td>SMA PLUS ISLAM PACET</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAPLUSMERDEKASOREANG67.png" /></td><td>SMA PLUS MERDEKA SOREANG</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAPLUSTEBARILMUCIPARAY68.png" /></td><td>SMA PLUS TEBAR ILMU CIPARAY</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAPUQPAMEUNGPEUK69.png" /></td><td>SMA PUQ PAMEUNGPEUK</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAPUTRAINDONESIAPASEH70.png" /></td><td>SMA PUTRA INDONESIA PASEH</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMASAPTADHARMA71.png" /></td><td>SMA SAPTA DHARMA</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMASOREANGPUTRA72.png" /></td><td>SMA SOREANG PUTRA</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMASWADAYAKARYACIWIDEY73.png" /></td><td>SMA SWADAYA KARYA CIWIDEY</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMATALENTA74.png" /></td><td>SMA TALENTA</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMATAMANSISWARANCAEKEK75.png" /></td><td>SMA TAMAN SISWA RANCAEKEK</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMATELKOMBANDUNG76.png" /></td><td>SMA TELKOM BANDUNG</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMATERPADUALMUMIN77.png" /></td><td>SMA TERPADU AL-MUMIN</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMATERPADUBAITURRAHMAN78.png" /></td><td>SMA TERPADU BAITURRAHMAN</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMATERPADUBANDUNGIBUN79.png" /></td><td>SMA TERPADU BANDUNG IBUN</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMATUNASBARUCIPARAY80.png" /></td><td>SMA TUNAS BARU CIPARAY</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAYADIKACICALENGKA81.png" /></td><td>SMA YADIKA CICALENGKA</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAYADIKASOREANG82.png" /></td><td>SMA YADIKA SOREANG</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAYAPIALHUSAENI83.png" /></td><td>SMA YAPI AL-HUSAENI</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAYPBINABANGSA84.png" /></td><td>SMA YP BINA BANGSA</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAYPPIBALEENDAH85.png" /></td><td>SMA YPPI BALEENDAH</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAYUMIKBANJARAN86.png" /></td><td>SMA YUMIK BANJARAN</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAASALFIIL87.png" /></td><td>SMAAS AL FIIL</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAN1BALEENDAH88.png" /></td><td>SMAN 1 BALEENDAH</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAN1BANJARAN89.png" /></td><td>SMAN 1 BANJARAN</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAN1BOJONGSOANG90.png" /></td><td>SMAN 1 BOJONGSOANG</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAN1CICALENGKA91.png" /></td><td>SMAN 1 CICALENGKA</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAN1CIKANCUNG92.png" /></td><td>SMAN 1 CIKANCUNG</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAN1CILEUNYI93.png" /></td><td>SMAN 1 CILEUNYI</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAN1CIPARAY94.png" /></td><td>SMAN 1 CIPARAY</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAN1CIWIDEY95.png" /></td><td>SMAN 1 CIWIDEY</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAN1DAYEUHKOLOT96.png" /></td><td>SMAN 1 DAYEUHKOLOT</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAN1KATAPANG97.png" /></td><td>SMAN 1 KATAPANG</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAN1KERTASARI98.png" /></td><td>SMAN 1 KERTASARI</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAN1MAJALAYA99.png" /></td><td>SMAN 1 MAJALAYA</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAN1MARGAASIH100.png" /></td><td>SMAN 1 MARGAASIH</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAN1MARGAHAYU101.png" /></td><td>SMAN 1 MARGAHAYU</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAN1NAGREG102.png" /></td><td>SMAN 1 NAGREG</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAN1PANGALENGAN103.png" /></td><td>SMAN 1 PANGALENGAN</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAN1RANCAEKEK104.png" /></td><td>SMAN 1 RANCAEKEK</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMAN1SOREANG105.png" /></td><td>SMAN 1 SOREANG</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMASALMADINA106.png" /></td><td>SMAS AL MADINA</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMASHARAPANBANGSABALEENDAH107.png" /></td><td>SMAS HARAPAN BANGSA BALEENDAH</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_SMASISLAMTERPADUSASAMA108.png" /></td><td>SMAS ISLAM TERPADU SASAMA</td></tr><tr><td style="text-align: center;"><img src="legend/buffer_SMA_1_109.png" /></td><td></td></tr></table>', layer: layer_buffer_SMA_1},
+            {label: "Google Satellite", layer: layer_GoogleSatellite_0},]
+        var lay = L.control.layers.tree(null, overlaysTree,{
+            //namedToggle: true,
+            //selectorBack: false,
+            //closedSymbol: '&#8862; &#x1f5c0;',
+            //openedSymbol: '&#8863; &#x1f5c1;',
+            //collapseAll: 'Collapse all',
+            //expandAll: 'Expand all',
+            collapsed: true,
+        });
+        lay.addTo(map);
+        setBounds();
+        </script>
+    </body>
+</html>
