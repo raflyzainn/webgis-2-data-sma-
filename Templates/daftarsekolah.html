@@ -6,208 +6,44 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
-    <title>Daftar Sekolah</title>
-    <style>
-        body {
-            font-family: 'Josefin Sans', sans-serif;
-            background-color: #00186D;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            margin: 0;
-            overflow-x: hidden; /* Prevents X-axis scrolling */
-        }
-
-        header {
-            background-color: #ffff;
-            padding: 0;  
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;  
-            position: fixed; 
-            top: 0; 
-            left: 0;
-            right: 0;  
-            box-sizing: border-box;  
-            height: 100px;
-        }
-
-        main {
-            flex-grow: 1; 
-            padding-top: 100px; 
-            color: #fff; /* Added for contrast against background */
-        }
-
-        main h2 {
-            color: #ffff;
-            text-align: center;
-            margin-top: 20px; /* Adjusted margin for better spacing */
-            margin-bottom: 20px;
-            font-size: 40px; /* Slightly smaller font for h2 */
-        }
-
-        main table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-
-        main th, main td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-
-        main th {
-            background-color: #f2f2f2;
-            color: #000; /* Changed text color for header */
-        }
-
-        main img {
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            margin-bottom: 50px;
-        }
-
-        .logo {
-            margin-left: 25px;
-            width: 425px;
-        }
-
-        .link {
-            margin-left: 40px; /* Sesuaikan margin kiri untuk mengurangi efek terlalu ke kanan */
-            list-style: none;
-            display: flex;
-            gap: 80px;
-            padding-right: 40px; /* Tambahkan padding kanan untuk memberikan jarak */
-            font-weight: bold;
-            font-size: 30px;
-        }
-
-        .link li {
-            display: inline;
-        }
-
-        .link a {
-            text-decoration: none; 
-            color: #004DD1; 
-        }
-
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .pagination a {
-            margin: 0 5px;
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-            text-decoration: none;
-            color: #007BFF;
-        }
-
-        .pagination a.active {
-            background-color: #007BFF;
-            color: white;
-            border: 1px solid #007BFF;
-        }
-
-        .footer {
-            background-color: #43569C;
-            padding: 20px;
-            color: white;
-            font-family: 'Josefin Sans';
-            width: 100%; 
-        }
-
-        .footer-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            max-width: 100%; 
-        }
-
-        .footer-left {
-            width: 60%;
-            margin-bottom: 50px;
-        }
-
-        .footer-left h2 {
-            display: flex;
-            align-items: center;
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-
-        .footer-left .team {
-            display: flex;
-            justify-content: space-between;
-            gap: 40px; 
-        }
-
-        .footer-left .left-side, .footer-left .right-side {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .footer-left .member {
-            margin-bottom: 30px; 
-        }
-
-        .footer-left .member h3 {
-            font-size: 18px;
-            margin: 0;
-        }
-
-        .footer-left .member p {
-            font-size: 14px;
-            margin: 5px 0;
-        }
-
-        .footer-right {
-            width: 30%;
-            text-align: right;
-        }
-
-        .footer-right img {
-            margin-top: 80px;
-            margin-right: 250px;
-            width: 400px; 
-            margin-bottom: 10px;
-        }
-
-        .footer-right p {
-            text-align: left;
-            font-size: 18px;
-        }
-
-        .icon {
-            background: url('home-icon.png') no-repeat center center;
-            width: 24px;
-            height: 24px;
-            display: inline-block;
-            margin-right: 10px;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='Styles/daftarsekolah.css') }}">
+    <title>EduMap Bandung</title>
 </head>
 <body>
     <header>
         <img src="{{ url_for('static', filename='logo.png') }}" alt="Sample Image" class="logo">
-        
         <ul class="link">
             <li><a href="/">Beranda</a></li>
-            <li><a href="daftarsekolah">Data Sekolah</a></li>
+            <li><a href="{{ url_for('daftarsekolah.daftarsekolah') }}">Data Sekolah</a></li>
             <li><a href="webgis">WebGis</a></li>
-            <li><a href="">Tentang Kami</a></li>
+            <li><a href="tentangkami">Tentang Kami</a></li>
         </ul>
     </header>
 
     <main>
         <h2>DATA SEKOLAH</h2>
+        <img src="{{ url_for('static', filename='garis.png') }}" class="garis">
+        
+        <div class="search-container">
+            <form method="GET" action="{{ url_for('daftarsekolah.daftarsekolah', page=pagination_info.current_page) }}">
+                <input type="text" name="search" value="{{ search_query }}" placeholder="Nama Sekolah">
+                
+                <!-- <select name="status">
+                    <option value="">Semua Status</option>
+                    <option value="NEGERI" {% if status_filter == 'NEGERI' %}selected{% endif %}>NEGERI</option>
+                    <option value="SWASTA" {% if status_filter == 'SWASTA' %}selected{% endif %}>SWASTA</option>
+                </select>
+        
+                <select name="akreditasi">
+                    <option value="">Semua Akreditasi</option>
+                    <option value="A" {% if akreditasi_filter == 'A' %}selected{% endif %}>A</option>
+                    <option value="B" {% if akreditasi_filter == 'B' %}selected{% endif %}>B</option>
+                    <option value="C" {% if akreditasi_filter == 'C' %}selected{% endif %}>C</option>
+                </select> -->
+                
+                <button type="submit">CARI</button>
+            </form>
+        </div>
         
         <table>
             <thead>
@@ -220,19 +56,36 @@
                     <th>Longitude</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="schoolTableBody">
                 {% for school in data %}
                 <tr>
                     <td>{{ school['id_sekolah'] }}</td>
                     <td>{{ school['sekolah'] }}</td>
                     <td>{{ school['status'] }}</td>
                     <td>{{ school['akreditasi'] }}</td>
-                    <td>{{ school['latitude'] }}</td>
+                    <td>{{ school['lattitude'] }}</td>
                     <td>{{ school['longitude'] }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
-        </table>
+        </table>        
+
+        <div class="pagination">
+            {% if pagination_info.total_pages > 1 %}
+                {% if pagination_info.current_page > 1 %}
+                    <a href="{{ url_for('daftarsekolah.daftarsekolah', page=pagination_info.current_page - 1, search=search_query, status=status_filter, akreditasi=akreditasi_filter) }}">
+                        <button>Sebelumnya</button>
+                    </a>
+                {% endif %}
+                <span>Page {{ pagination_info.current_page }} of {{ pagination_info.total_pages }}</span>
+                {% if pagination_info.current_page < pagination_info.total_pages %}
+                    <a href="{{ url_for('daftarsekolah.daftarsekolah', page=pagination_info.current_page + 1, search=search_query, status=status_filter, akreditasi=akreditasi_filter) }}">
+                        <button>Selanjutnya</button>
+                    </a>
+                {% endif %}
+            {% endif %}
+        </div>        
+        
     </main>
 
     <footer class="footer">
@@ -279,6 +132,6 @@
                 <p>Telkom University</p>
             </div>
         </div>
-    </footer>    
+    </footer>  
 </body>
 </html>

@@ -1,0 +1,119 @@
+body {
+    font-family: 'Josefin Sans', sans-serif;
+    background-color: #00186D;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    overflow-x: hidden; /* Prevents X-axis scrolling */
+}
+
+header { 
+    background-color: #ffff;
+    padding: 0;  
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;  
+    position: fixed; 
+    top: 0; 
+    left: 0;
+    right: 0;  
+    box-sizing: border-box; 
+    margin: 0; 
+    z-index: 1000; 
+    height: 100px;
+}
+
+.link {
+    margin-left: 40px; 
+    list-style: none;
+    display: flex;
+    gap: 80px;
+    padding-right: 40px; 
+    font-weight: bold;
+    font-size: 30px;
+}
+
+main {
+    flex-grow: 1; 
+    padding-top: 100px; 
+}
+
+.logo {
+    margin-left: 25px;
+    width: 425px;
+}
+
+.link li {
+    display: inline;
+}
+
+.link a {
+    text-decoration: none; 
+    color: #004DD1; 
+}
+
+.footer {
+    background-color: #43569C;
+    padding: 20px;
+    color: white;
+    font-family: 'Josefin Sans';
+    height: 220px;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.footer-left img {
+    width: 30%;
+    margin-top: 25px;
+    margin-left: 250px;
+    margin-bottom: 50px;
+}
+
+.garis-footer {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: -180px;
+}
+
+.footer-right {
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    align-items: flex-start; /* Align text to the right */
+    margin-left: 1000px; /* Adjust margin as needed */
+    margin-top: -150px;
+}
+
+.footer-right a {
+    text-decoration: none;
+    color: #ffff;
+}
+
+.icon {
+    background: url('home-icon.png') no-repeat center center;
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+main h1 {
+    text-align: center;
+    color: #ffff;
+    font-size: 60px;
+    margin-top: 90px;
+    margin-bottom: 10px;
+}
+
+main img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 50px;
+}

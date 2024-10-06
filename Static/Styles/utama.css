@@ -419,12 +419,12 @@ header {
     max-height: 400px;
 }
 
-
 .footer {
     background-color: #43569C;
     padding: 20px;
     color: white;
     font-family: 'Josefin Sans';
+    height: 220px;
 }
 
 .footer-container {
@@ -433,60 +433,31 @@ header {
     align-items: flex-start;
 }
 
-.footer-left {
-    width: 60%;
+.footer-left img {
+    width: 30%;
+    margin-top: 25px;
+    margin-left: 250px;
     margin-bottom: 50px;
 }
 
-.footer-left h2 {
-    display: flex;
-    align-items: center;
-    font-size: 24px;
-    margin-bottom: 20px;
-}
-
-.footer-left .team {
-    display: flex;
-    justify-content: space-between;
-    gap: 40px; /* Adjust gap between left and right side */
-}
-
-.footer-left .left-side, .footer-left .right-side {
-    display: flex;
-    flex-direction: column;
-}
-
-.footer-left .member {
-    margin-bottom: 30px; /* Adds space between members */
-    margin-left: 50px;
-    margin-right: 100px;
-}
-
-.footer-left .member h3 {
-    font-size: 18px;
-    margin: 0;
-}
-
-.footer-left .member p {
-    font-size: 14px;
-    margin: 5px 0;
+.garis-footer {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: -180px;
 }
 
 .footer-right {
-    width: 30%;
-    text-align: right;
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    align-items: flex-start; /* Align text to the right */
+    margin-left: 1000px; /* Adjust margin as needed */
+    margin-top: -150px;
 }
 
-.footer-right img {
-    margin-top: 80px;
-    margin-right: 250px;
-    width: 400px; 
-    margin-bottom: 10px;
-}
-
-.footer-right p {
-    text-align: left;
-    font-size: 18px;
+.footer-right a {
+    text-decoration: none;
+    color: #ffff;
 }
 
 .icon {
@@ -496,3 +467,4 @@ header {
     display: inline-block;
     margin-right: 10px;
 }
+
