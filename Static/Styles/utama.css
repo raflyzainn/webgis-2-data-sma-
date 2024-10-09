@@ -10,7 +10,7 @@ body {
     overflow-x: hidden; 
 }
 
-header { 
+header {
     background-color: #ffff;
     padding: 0;  
     display: flex;
@@ -24,17 +24,17 @@ header {
     box-sizing: border-box; 
     margin: 0; 
     z-index: 1000; 
-    height: 100px;
+    height: 80px; /* Reduced from 100px to 70px */
 }
 
 .link {
-    margin-left: 40px; /* Sesuaikan margin kiri untuk mengurangi efek terlalu ke kanan */
+    margin-left: 40px; 
     list-style: none;
     display: flex;
-    gap: 80px;
-    padding-right: 40px; /* Tambahkan padding kanan untuk memberikan jarak */
+    gap: 60px; /* Reduced the gap between links */
+    padding-right: 40px; 
     font-weight: bold;
-    font-size: 30px;
+    font-size: 24px; /* Reduced font size from 30px to 24px */
 }
 
 .link li {
@@ -48,7 +48,7 @@ header {
 
 .logo {
     margin-left: 25px;
-    width: 425px;
+    width: 325px;
 }
 
 .card1 {
@@ -174,11 +174,39 @@ header {
     margin-top: 100px;
 }
 
+.card3 img {
+    margin-top: -45px;
+}
+
 .card3 h1 {
     margin-top: 100px;
     font-size: 70px;
     text-align: center;
     color: #ffff;
+}
+
+.counters {
+    margin-bottom: 100px;
+    display: flex;
+    justify-content: space-around;
+    margin-top: 60px;
+}
+
+.counter {
+    text-align: center;
+    padding: 20px;
+}
+
+.counter h2 {
+    font-size: 60px;
+    color: #ffff; 
+    margin: 0;
+}
+
+.counter p {
+    font-size: 30px;
+    margin: 10px 0 0 0;
+    color: #ffff; /* Adjust this color to match your theme */
 }
 
 .garis2 {
@@ -423,41 +451,61 @@ header {
     background-color: #43569C;
     padding: 20px;
     color: white;
-    font-family: 'Josefin Sans';
-    height: 260px;
+    font-family: 'Josefin Sans', sans-serif;
 }
 
 .footer-container {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .footer-left img {
-    width: 30%;
-    margin-top: 25px;
-    margin-left: 250px;
-    margin-bottom: 50px;
+    width: 100%;
+    max-width: 350px;
 }
 
-.garis-footer {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: -180px;
+.footer-center {
+    height: 100px;
+    width: 1px;
+    background-color: white;
+    margin: 0 20px;
 }
 
 .footer-right {
     display: flex;
-    flex-direction: column; /* Stack items vertically */
-    align-items: flex-start; /* Align text to the right */
-    margin-left: 1000px; /* Adjust margin as needed */
-    margin-top: -150px;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .footer-right a {
     text-decoration: none;
-    color: #ffff;
+    color: #ffffff;
+    margin-bottom: 10px;
+}
+
+.footer-right p {
+    margin: 5px 0;
+}
+
+@media (max-width: 768px) {
+    .footer-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .footer-center {
+        height: 1px;
+        width: 80%;
+        margin: 20px 0;
+    }
+
+    .footer-right {
+        align-items: center;
+    }
 }
 
 .icon {

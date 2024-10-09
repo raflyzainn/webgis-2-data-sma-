@@ -8,10 +8,23 @@
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='Styles/daftarsekolah.css') }}">
     <title>EduMap Bandung</title>
+    <style>
+        .search-container input {
+            cursor: pointer;
+        }
+        .hidden {
+            display: none;
+        }
+        .school-cards, .table-view {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <img src="{{ url_for('static', filename='logo.png') }}" alt="Sample Image" class="logo">
+        <a href="/">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Sample Image" class="logo">
+        </a>
         <ul class="link">
             <li><a href="/">Beranda</a></li>
             <li><a href="{{ url_for('daftarsekolah.daftarsekolah') }}">Data Sekolah</a></li>
@@ -21,117 +34,169 @@
     </header>
 
     <main>
-        <h2>DATA SEKOLAH</h2>
-        <img src="{{ url_for('static', filename='garis.png') }}" class="garis">
-        
         <div class="search-container">
-            <form method="GET" action="{{ url_for('daftarsekolah.daftarsekolah', page=pagination_info.current_page) }}">
-                <input type="text" name="search" value="{{ search_query }}" placeholder="Nama Sekolah">
-                
-                <!-- <select name="status">
-                    <option value="">Semua Status</option>
-                    <option value="NEGERI" {% if status_filter == 'NEGERI' %}selected{% endif %}>NEGERI</option>
-                    <option value="SWASTA" {% if status_filter == 'SWASTA' %}selected{% endif %}>SWASTA</option>
-                </select>
-        
-                <select name="akreditasi">
-                    <option value="">Semua Akreditasi</option>
-                    <option value="A" {% if akreditasi_filter == 'A' %}selected{% endif %}>A</option>
-                    <option value="B" {% if akreditasi_filter == 'B' %}selected{% endif %}>B</option>
-                    <option value="C" {% if akreditasi_filter == 'C' %}selected{% endif %}>C</option>
-                </select> -->
-                
+            <form id="searchForm" method="GET" action="{{ url_for('daftarsekolah.daftarsekolah', page=pagination_info.current_page) }}">
+                <input type="text" id="searchInput" name="search" value="{{ search_query }}" placeholder="Nama Sekolah">
                 <button type="submit">CARI</button>
             </form>
         </div>
-        
-        <table>
-            <thead>
-                <tr>
-                    <th>ID Sekolah</th>
-                    <th>Nama Sekolah</th>
-                    <th>Status</th>
-                    <th>Akreditasi</th>
-                    <th>Latitude</th>
-                    <th>Longitude</th>
-                </tr>
-            </thead>
-            <tbody id="schoolTableBody">
-                {% for school in data %}
-                <tr>
-                    <td>{{ school['id_sekolah'] }}</td>
-                    <td>{{ school['sekolah'] }}</td>
-                    <td>{{ school['status'] }}</td>
-                    <td>{{ school['akreditasi'] }}</td>
-                    <td>{{ school['lattitude'] }}</td>
-                    <td>{{ school['longitude'] }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>        
 
-        <div class="pagination">
-            {% if pagination_info.total_pages > 1 %}
-                {% if pagination_info.current_page > 1 %}
-                    <a href="{{ url_for('daftarsekolah.daftarsekolah', page=pagination_info.current_page - 1, search=search_query, status=status_filter, akreditasi=akreditasi_filter) }}">
-                        <button>Sebelumnya</button>
-                    </a>
+        <div class="school-cards" id="schoolCards">
+            <h2>DATA SEKOLAH</h2>
+            <img src="{{ url_for('static', filename='garis.png') }}" class="garis">
+
+            <div class="card-wrapper">
+                <div class="column">
+                    <!-- First 5 cards -->
+                    <div class="card">
+                        <img src="{{ url_for('static', filename='/Images/kertasari.png') }}" alt="Map Image" class="card-image">
+                        <div class="card-text">
+                            <h3>SMA 1 Kertasari</h3>
+                            <p>Akreditasi A</p>
+                            <p>Jl. Terusan Pacet Km.15,5, RT.01/RW.08,<br> Sukapura, Kec. Kertasari, Kabupaten <br> Bandung, Jawa Barat 40386</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <img src="{{ url_for('static', filename='/Images/kertasari.png') }}" alt="Map Image" class="card-image">
+                        <div class="card-text">
+                            <h3>SMA 1 Kertasari</h3>
+                            <p>Akreditasi A</p>
+                            <p>Jl. Terusan Pacet Km.15,5, RT.01/RW.08,<br> Sukapura, Kec. Kertasari, Kabupaten <br> Bandung, Jawa Barat 40386</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <img src="{{ url_for('static', filename='/Images/kertasari.png') }}" alt="Map Image" class="card-image">
+                        <div class="card-text">
+                            <h3>SMA 1 Kertasari</h3>
+                            <p>Akreditasi A</p>
+                            <p>Jl. Terusan Pacet Km.15,5, RT.01/RW.08,<br> Sukapura, Kec. Kertasari, Kabupaten <br> Bandung, Jawa Barat 40386</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <img src="{{ url_for('static', filename='/Images/kertasari.png') }}" alt="Map Image" class="card-image">
+                        <div class="card-text">
+                            <h3>SMA 1 Kertasari</h3>
+                            <p>Akreditasi A</p>
+                            <p>Jl. Terusan Pacet Km.15,5, RT.01/RW.08,<br> Sukapura, Kec. Kertasari, Kabupaten <br> Bandung, Jawa Barat 40386</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <img src="{{ url_for('static', filename='/Images/kertasari.png') }}" alt="Map Image" class="card-image">
+                        <div class="card-text">
+                            <h3>SMA 1 Kertasari</h3>
+                            <p>Akreditasi A</p>
+                            <p>Jl. Terusan Pacet Km.15,5, RT.01/RW.08,<br> Sukapura, Kec. Kertasari, Kabupaten <br> Bandung, Jawa Barat 40386</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <!-- Next 5 cards -->
+                    <div class="card">
+                        <img src="{{ url_for('static', filename='/Images/katapang.png') }}" alt="Map Image" class="card-image">
+                        <div class="card-text">
+                            <h3>SMAN 1 Katapang</h3>
+                            <p>Akreditasi A</p>
+                            <p>Banyusari, Kec. Katapang, Kabupaten Bandung, Jawa Barat</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <img src="{{ url_for('static', filename='/Images/katapang.png') }}" alt="Map Image" class="card-image">
+                        <div class="card-text">
+                            <h3>SMAN 1 Katapang</h3>
+                            <p>Akreditasi A</p>
+                            <p>Banyusari, Kec. Katapang, Kabupaten Bandung, Jawa Barat</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <img src="{{ url_for('static', filename='/Images/katapang.png') }}" alt="Map Image" class="card-image">
+                        <div class="card-text">
+                            <h3>SMAN 1 Katapang</h3>
+                            <p>Akreditasi A</p>
+                            <p>Banyusari, Kec. Katapang, Kabupaten Bandung, Jawa Barat</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <img src="{{ url_for('static', filename='/Images/katapang.png') }}" alt="Map Image" class="card-image">
+                        <div class="card-text">
+                            <h3>SMAN 1 Katapang</h3>
+                            <p>Akreditasi A</p>
+                            <p>Banyusari, Kec. Katapang, Kabupaten Bandung, Jawa Barat</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <img src="{{ url_for('static', filename='/Images/katapang.png') }}" alt="Map Image" class="card-image">
+                        <div class="card-text">
+                            <h3>SMAN 1 Katapang</h3>
+                            <p>Akreditasi A</p>
+                            <p>Banyusari, Kec. Katapang, Kabupaten Bandung, Jawa Barat</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-view hidden" id="tableView">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Sekolah</th>
+                        <th>Nama Sekolah</th>
+                        <th>Status</th>
+                        <th>Akreditasi</th>
+                    </tr>
+                </thead>
+                <tbody id="schoolTableBody">
+                    {% for school in data %}
+                    <tr>
+                        <td>{{ school['id_sekolah'] }}</td>
+                        <td>{{ school['sekolah'] }}</td>
+                        <td>{{ school['status'] }}</td>
+                        <td>{{ school['akreditasi'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>        
+
+            <div class="pagination">
+                {% if pagination_info.total_pages > 1 %}
+                    {% if pagination_info.current_page > 1 %}
+                        <a href="{{ url_for('daftarsekolah.daftarsekolah', page=pagination_info.current_page - 1, search=search_query, status=status_filter, akreditasi=akreditasi_filter) }}">
+                            <button>Sebelumnya</button>
+                        </a>
+                    {% endif %}
+                    <span>Page {{ pagination_info.current_page }} of {{ pagination_info.total_pages }}</span>
+                    {% if pagination_info.current_page < pagination_info.total_pages %}
+                        <a href="{{ url_for('daftarsekolah.daftarsekolah', page=pagination_info.current_page + 1, search=search_query, status=status_filter, akreditasi=akreditasi_filter) }}">
+                            <button>Selanjutnya</button>
+                        </a>
+                    {% endif %}
                 {% endif %}
-                <span>Page {{ pagination_info.current_page }} of {{ pagination_info.total_pages }}</span>
-                {% if pagination_info.current_page < pagination_info.total_pages %}
-                    <a href="{{ url_for('daftarsekolah.daftarsekolah', page=pagination_info.current_page + 1, search=search_query, status=status_filter, akreditasi=akreditasi_filter) }}">
-                        <button>Selanjutnya</button>
-                    </a>
-                {% endif %}
-            {% endif %}
+            </div>
         </div>        
-        
     </main>
 
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-left">
-                <h2><i class="icon"></i> Tentang Kami</h2>
-                <div class="team">
-                    <div class="left-side">
-                        <div class="member">
-                            <h3>Achmmad Rafly Khatami Zain</h3>
-                            <p>S1 Informatika</p>
-                            <p>raflyzainn1@gmail.com</p>
-                        </div>
-                        <div class="member">
-                            <h3>Munawir Rifa'i</h3>
-                            <p>S1 Teknik Telekomunikasi</p>
-                            <p>munawirr90@gmail.com</p>
-                        </div>
-                        <div class="member">
-                            <h3>Ni Made Sita Manika Putri</h3>
-                            <p>S1 Teknik Telekomunikasi</p>
-                            <p>sitamanikaputri@gmail.com</p>
-                        </div>
-                    </div>
-                    <div class="right-side">
-                        <div class="member">
-                            <h3>Bang Hakim</h3>
-                            <p>S1 Teknik Telekomunikasi</p>
-                        </div>
-                        <div class="member">
-                            <h3>Bang Abyan</h3>
-                            <p>S1 Teknik Telekomunikasi</p>
-                        </div>
-                        <div class="member">
-                            <h3>Bang Malvin</h3>
-                            <p>S1 Teknik Telekomunikasi</p>
-                        </div>
-                    </div>
-                </div>
+                <a href="https://www.instagram.com/mbclab/?hl=en">
+                    <img src="{{ url_for('static', filename='mbc-logo.png') }}" alt="MBC Logo" class="logo-footer">
+                </a>
             </div>
+            <div class="footer-center"></div>
             <div class="footer-right">
-                <img src="{{ url_for('static', filename='mbc-logo.png') }}" alt="MBC Lab Logo" class="mbc-logo">
-                <p>MBC Laboratory</p>
-                <p>Telkom University</p>
+                <a href="https://www.instagram.com/mbclab/?hl=en">MBC Laboratory</a>
+                <p>Jl. Telekomunikasi No.1, Terusan Buah Batu, Bandung</p>
+                <p>TULT 13.04</p>
             </div>
         </div>
     </footer>  
+
+    <script>
+        // When the search bar is clicked, show the table view and hide the cards
+        document.getElementById('searchInput').addEventListener('focus', function() {
+            document.getElementById('schoolCards').classList.add('hidden');
+            document.getElementById('tableView').classList.remove('hidden');
+        });
+    </script>
 </body>
 </html>

@@ -11,7 +11,9 @@
 </head>
 <body>
     <header>
-        <img src="{{ url_for('static', filename='logo.png') }}" alt="Sample Image" class="logo">
+        <a href="/">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Sample Image" class="logo">
+        </a>
         
         <ul class="link">
             <li><a href="/">Beranda</a></li>
@@ -48,10 +50,29 @@
     </a>
 
     <div class="card3">
-        <h1>INFOGRAFIS</h1>
-        <img src="{{ url_for('static', filename='garis.png') }}" class="garis2">
+        <h1>AKREDITASI SEKOLAH</h1>
+        <img src="{{ url_for('static', filename='garis-webgis.png') }}" class="garis2">
     </div>
-
+    
+    <div class="counters">
+        <div class="counter">
+            <h2 id="counter1">0</h2>
+            <p>A</p>
+        </div>
+        <div class="counter">
+            <h2 id="counter2">0</h2>
+            <p>B</p>
+        </div>
+        <div class="counter">
+            <h2 id="counter3">0</h2>
+            <p>C</p>
+        </div>
+        <div class="counter">
+            <h2 id="counter4">0</h2>
+            <p>Jumlah Sekolah</p>
+        </div>
+    </div>
+    
     <div class="card4">
         <h1 class="text-card4">BERITA</h1>
         <img src="{{ url_for('static', filename='garis2.png') }}" class="garis3">
@@ -111,15 +132,43 @@
     </div>
 
     <footer class="footer">
-        <div class="footer-left">
-            <img src="{{ url_for('static', filename='mbc-logo.png') }}" class="logo-footer">
+        <div class="footer-container">
+            <div class="footer-left">
+                <a href="https://www.instagram.com/mbclab/?hl=en">
+                    <img src="{{ url_for('static', filename='mbc-logo.png') }}" alt="MBC Logo" class="logo-footer">
+                </a>
+            </div>
+            <div class="footer-center"></div>
+            <div class="footer-right">
+                <a href="https://www.instagram.com/mbclab/?hl=en">MBC Laboratory</a>
+                <p>Jl. Telekomunikasi No.1, Terusan Buah Batu, Bandung</p>
+                <p>TULT 13.04</p>
+            </div>
         </div>
-        <img src="{{ url_for('static', filename='garis-footer.png') }}" class="garis-footer">
-        <div class="footer-right">
-            <a href="">MBC Laboratory</a>
-            <p>Jl. Telekomunikasi No.1, Terusan Buah Batu, Bandung</p>
-            <p>TULT 13.04</p>
-        </div>
-    </footer>    
+    </footer> 
+
+    <script>
+        function animateCounter(id, start, end, duration) {
+            const element = document.getElementById(id);
+            const range = end - start;
+            let current = start;
+            const increment = end > start ? 1 : -1;
+            const stepTime = Math.abs(Math.floor(duration / range));
+            const timer = setInterval(function() {
+                current += increment;
+                element.textContent = current;
+                if (current == end) {
+                    clearInterval(timer);
+                }
+            }, stepTime);
+        }
+
+        window.onload = function() {
+            animateCounter("counter1", 0, 67, 2000);  
+            animateCounter("counter2", 0, 40, 2500);  
+            animateCounter("counter3", 0,3, 3000);  
+            animateCounter("counter4", 0, 110, 3500);  
+        };
+    </script>
 </body>
 </html>

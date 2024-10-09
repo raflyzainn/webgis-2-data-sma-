@@ -11,7 +11,9 @@
 </head>
 <body>
     <header>
-        <img src="{{ url_for('static', filename='logo.png') }}" alt="Sample Image" class="logo">
+        <a href="/">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Sample Image" class="logo">
+        </a>
         
         <ul class="link">
             <li><a href="/">Beranda</a></li>
@@ -55,15 +57,19 @@
     
 
     <footer class="footer">
-        <div class="footer-left">
-            <img src="{{ url_for('static', filename='mbc-logo.png') }}" class="logo-footer">
+        <div class="footer-container">
+            <div class="footer-left">
+                <a href="https://www.instagram.com/mbclab/?hl=en">
+                    <img src="{{ url_for('static', filename='mbc-logo.png') }}" alt="MBC Logo" class="logo-footer">
+                </a>
+            </div>
+            <div class="footer-center"></div>
+            <div class="footer-right">
+                <a href="https://www.instagram.com/mbclab/?hl=en">MBC Laboratory</a>
+                <p>Jl. Telekomunikasi No.1, Terusan Buah Batu, Bandung</p>
+                <p>TULT 13.04</p>
+            </div>
         </div>
-        <img src="{{ url_for('static', filename='garis-footer.png') }}" class="garis-footer">
-        <div class="footer-right">
-            <a href="">MBC Laboratory</a>
-            <p>Jl. Telekomunikasi No.1, Terusan Buah Batu, Bandung</p>
-            <p>TULT 13.04</p>
-        </div>
-    </footer>   
+    </footer>    
 </body>
 </html>
