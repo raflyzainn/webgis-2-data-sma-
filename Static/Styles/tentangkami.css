@@ -144,6 +144,11 @@ main img {
     margin-left: 225px;
 }
 
+.team-member a {
+    text-decoration: none;
+    color: #ffff;
+}
+
 .team-member img {
     width: 35%; 
     border-radius: 15px; 

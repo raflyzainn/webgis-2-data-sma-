@@ -27,13 +27,13 @@
         <h1>WEBGIS SMA BANDUNG</h1>
         <img src="{{ url_for('static', filename='garis-webgis.png') }}" alt="Sample Image">
 
-        <iframe 
-            src="{{ url_for('static', filename='qgis2web_2024_10_02-19_46_39_975851/indexqgis.html') }}" 
-            frameborder="0" 
-            width="100%" 
-            height="800px"
-            margin-bottom="100px">
-        </iframe>
+        <div class="iframe-container">
+            <iframe 
+                src="{{ url_for('static', filename='qgis2web_2024_10_02-19_46_39_975851/indexqgis.html') }}" 
+                width="80%" 
+                height="800px">
+            </iframe>
+        </div>
     </main>
 
     <footer class="footer">

@@ -226,6 +226,11 @@ th {
     color: #ffff;
 }
 
+.search-container {
+    margin-top: 20px; /* Add some space above the search bar */
+    text-align: center; /* Center the search bar if needed */
+}
+
 .search-container input {
     width: 100%;
     padding: 13px;
