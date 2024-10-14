@@ -27,17 +27,17 @@ header {
     box-sizing: border-box; 
     margin: 0; 
     z-index: 1000; 
-    height: 80px; /* Reduced from 100px to 70px */
+    height: 80px; 
 }
 
 .link {
     margin-left: 40px; 
     list-style: none;
     display: flex;
-    gap: 60px; /* Reduced the gap between links */
+    gap: 60px; 
     padding-right: 40px; 
     font-weight: bold;
-    font-size: 24px; /* Reduced font size from 30px to 24px */
+    font-size: 24px; 
 }
 
 .link li {

@@ -24,17 +24,17 @@ header {
     box-sizing: border-box; 
     margin: 0; 
     z-index: 1000; 
-    height: 80px; /* Reduced from 100px to 70px */
+    height: 80px; 
 }
 
 .link {
     margin-left: 40px; 
     list-style: none;
     display: flex;
-    gap: 60px; /* Reduced the gap between links */
+    gap: 60px; 
     padding-right: 40px; 
     font-weight: bold;
-    font-size: 24px; /* Reduced font size from 30px to 24px */
+    font-size: 24px; 
 }
 
 .link li {
@@ -206,7 +206,7 @@ header {
 .counter p {
     font-size: 30px;
     margin: 10px 0 0 0;
-    color: #ffff; /* Adjust this color to match your theme */
+    color: #ffff; 
 }
 
 .garis2 {
@@ -390,7 +390,7 @@ header {
 .card5 h2 {
     color: #ffff;
     font-size: 70px;
-    text-align: right; /* Align the h2 to the right */
+    text-align: right; 
     margin-top: -600px; 
     margin-right: 375px;
 }
@@ -400,7 +400,7 @@ header {
 }
 
 #accordion {
-    margin: 20px auto; /* Reduced margin for better alignment */
+    margin: 20px auto; 
     width: 600px;
     margin-right: 200px;
 }

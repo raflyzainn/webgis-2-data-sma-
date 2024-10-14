@@ -42,7 +42,7 @@ header {
     box-sizing: border-box; 
     margin: 0; 
     z-index: 1000; 
-    height: 80px; /* Reduced from 100px to 70px */
+    height: 80px; 
 }
 
 .link {
@@ -99,7 +99,7 @@ header {
 }
 
 .column {
-    width: 48%; /* Adjust as needed */
+    width: 48%; 
 }
 
 .card {
@@ -227,8 +227,8 @@ th {
 }
 
 .search-container {
-    margin-top: 20px; /* Add some space above the search bar */
-    text-align: center; /* Center the search bar if needed */
+    margin-top: 20px;
+    text-align: center; 
 }
 
 .search-container input {

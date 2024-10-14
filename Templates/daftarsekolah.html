@@ -23,7 +23,7 @@
 <body>
     <header>
         <a href="/">
-            <img src="{{ url_for('static', filename='logo.png') }}" alt="Sample Image" class="logo">
+            <img src="{{ url_for('static', filename='/Images/logo.png') }}" alt="Sample Image" class="logo">
         </a>
         <ul class="link">
             <li><a href="/">Beranda</a></li>
@@ -43,11 +43,10 @@
 
         <div class="school-cards" id="schoolCards">
             <h2>DATA SEKOLAH</h2>
-            <img src="{{ url_for('static', filename='garis.png') }}" class="garis">
+            <img src="{{ url_for('static', filename='/Images/garis.png') }}" class="garis">
 
             <div class="card-wrapper">
                 <div class="column">
-                    <!-- First 5 cards -->
                     <div class="card">
                         <img src="{{ url_for('static', filename='/Images/kertasari.png') }}" alt="Map Image" class="card-image">
                         <div class="card-text">
@@ -57,11 +56,11 @@
                         </div>
                     </div>
                     <div class="card">
-                        <img src="{{ url_for('static', filename='/Images/kertasari.png') }}" alt="Map Image" class="card-image">
+                        <img src="{{ url_for('static', filename='/Images/katapang.png') }}" alt="Map Image" class="card-image">
                         <div class="card-text">
-                            <h3>SMA 1 Kertasari</h3>
+                            <h3>SMAN 1 Katapang</h3>
                             <p>Akreditasi A</p>
-                            <p>Jl. Terusan Pacet Km.15,5, RT.01/RW.08,<br> Sukapura, Kec. Kertasari, Kabupaten <br> Bandung, Jawa Barat 40386</p>
+                            <p>Banyusari, Kec. Katapang, Kabupaten <br> Bandung, Jawa Barat</p>
                         </div>
                     </div>
                     <div class="card">
@@ -90,7 +89,6 @@
                     </div>
                 </div>
                 <div class="column">
-                    <!-- Next 5 cards -->
                     <div class="card">
                         <img src="{{ url_for('static', filename='/Images/katapang.png') }}" alt="Map Image" class="card-image">
                         <div class="card-text">
@@ -179,7 +177,7 @@
         <div class="footer-container">
             <div class="footer-left">
                 <a href="https://www.instagram.com/mbclab/?hl=en">
-                    <img src="{{ url_for('static', filename='mbc-logo.png') }}" alt="MBC Logo" class="logo-footer">
+                    <img src="{{ url_for('static', filename='/Images/mbc-logo.png') }}" alt="MBC Logo" class="logo-footer">
                 </a>
             </div>
             <div class="footer-center"></div>
@@ -192,7 +190,6 @@
     </footer>  
 
     <script>
-        // When the search bar is clicked, show the table view and hide the cards
         document.getElementById('searchInput').addEventListener('focus', function() {
             document.getElementById('schoolCards').classList.add('hidden');
             document.getElementById('tableView').classList.remove('hidden');
